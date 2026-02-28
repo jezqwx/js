@@ -1,0 +1,10 @@
+{
+  "name": "lab5-modular-calculator",
+  "version": "1.0.0",
+  "description": "A modular calculator application using ES6 modules",
+  "type": "module",
+  "scripts": {
+    "start": "npx serve ./",
+    "dev": "npx serve ./"
+  }
+}
