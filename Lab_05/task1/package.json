@@ -1,0 +1,11 @@
+{
+  "name": "lab_05_modernization",
+  "version": "1.0.0",
+  "description": "Refactoring legacy JavaScript to modern ES6+ modular architecture",
+  "type": "module",
+  "main": "modernized/main.mjs",
+  "scripts": {
+    "start": "node modernized/main.mjs"
+  },
+  "license": "MIT"
+}
