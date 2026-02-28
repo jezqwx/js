@@ -59,7 +59,7 @@ export function handleClear(state) {
 }
 
 export async function handleAdvancedFunction(state, func) {
-    const module = await import('./advanced_feature.mjs');
+    const module = await import('../advanced_feature.mjs');
     const value = parseFloat(state.currentValue);
     let result;
 
