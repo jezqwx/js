@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 8.2 - Event Delegation</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="wrapper">
+    <h1>Lab 8.2 — Event Delegation Pattern</h1>
+    <p>Todo list with 1000+ items using one delegated event listener.</p>
+
+    <div class="controls">
+      <button class="main-btn" id="generateBtn">Generate 1000 Items</button>
+      <button class="main-btn" id="addBtn">Add One Item</button>
+      <button class="main-btn" id="compareBtn">Run Performance Test</button>
+    </div>
+
+    <div class="stats" id="stats">
+      Click "Generate 1000 Items" to begin.
+    </div>
+
+    <div class="todo-list" id="todo-list"></div>
+  </div>
+
+  <script type="module">
+    import { TodoList } from "./todo/TodoList.js";
+    import { testIndividualListeners, testEventDelegation } from "./test/performance-test.js";
+
+    const todoList = new TodoList("todo-list");
+
+    const generateBtn = document.getElementById("generateBtn");
+    const addBtn = document.getElementById("addBtn");
+    const compareBtn = document.getElementById("compareBtn");
+    const stats = document.getElementById("stats");
+
+    generateBtn.addEventListener("click", () => {
+      todoList.generateItems(1000);
+
+      stats.innerHTML = `
+        <strong>Generated successfully.</strong><br>
+        Total items: ${todoList.getCount()}<br>
+        All actions work through delegated events.
+      `;
+    });
+
+    addBtn.addEventListener("click", () => {
+      const id = todoList.addItem(`New Task #${todoList.idCounter + 1}`, "normal");
+
+      stats.innerHTML = `
+        <strong>Item added.</strong><br>
+        New item id: ${id}<br>
+        Total items: ${todoList.getCount()}<br>
+        New elements also work automatically because of event delegation.
+      `;
+    });
+
+    compareBtn.addEventListener("click", () => {
+      const individualTime = testIndividualListeners("todo-list", todoList.getCount());
+      const delegationTime = testEventDelegation("todo-list");
+
+      stats.innerHTML = `
+        <strong>Performance test completed.</strong><br>
+        Individual listeners setup time: ${individualTime.toFixed(4)} ms<br>
+        Event delegation setup time: ${delegationTime.toFixed(4)} ms<br>
+        Delegation uses fewer listeners and is better for large dynamic lists.
+      `;
+    });
+  </script>
+</body>
+</html>
