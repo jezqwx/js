@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 8.1 - Flyweight Forest</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Lab 8.1 — Flyweight Pattern</h1>
+    <p>Forest visualization with 10,000+ trees using shared flyweight objects.</p>
+
+    <div class="controls">
+      <button id="generateBtn">Generate 10,000 Trees</button>
+      <button id="renderBtn">Render Forest</button>
+    </div>
+
+    <div class="stats" id="stats">
+      Click “Generate 10,000 Trees” to begin.
+    </div>
+
+    <canvas id="forestCanvas" width="1100" height="700"></canvas>
+  </div>
+
+  <script type="module">
+    import { ForestRenderer } from "./forest/ForestRenderer.js";
+    import { compareMemory } from "./test/benchmark.js";
+
+    const renderer = new ForestRenderer("forestCanvas");
+
+    const generateBtn = document.getElementById("generateBtn");
+    const renderBtn = document.getElementById("renderBtn");
+    const statsBlock = document.getElementById("stats");
+
+    generateBtn.addEventListener("click", () => {
+      renderer.trees = [];
+      renderer.generateForest(10000);
+
+      statsBlock.innerHTML = `
+        <strong>Forest generated.</strong><br>
+        Trees prepared: 10,000<br>
+        Now click <strong>Render Forest</strong>.
+      `;
+    });
+
+    renderBtn.addEventListener("click", () => {
+      const start = performance.now();
+      const stats = renderer.render();
+      const end = performance.now();
+
+      const memoryCompare = compareMemory(10000, stats.uniqueFlyweights);
+
+      statsBlock.innerHTML = `
+        <strong>Render complete.</strong><br>
+        Total trees: ${stats.totalTrees}<br>
+        Unique flyweights: ${stats.uniqueFlyweights}<br>
+        Approx duplicated objects avoided: ${stats.memorySavedApprox}<br>
+        Estimated memory without Flyweight: ${memoryCompare.withoutFlyweight}<br>
+        Estimated memory with Flyweight: ${memoryCompare.withFlyweight}<br>
+        Estimated saved: ${memoryCompare.saved} (${memoryCompare.savedPercent})<br>
+        Render time: ${(end - start).toFixed(2)} ms
+      `;
+    });
+  </script>
+</body>
+</html>
