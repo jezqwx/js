@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 11.2 Demo</title>
+</head>
+<body>
+  <h1>Lab 11.2 Demo</h1>
+
+  <button id="loadDetails">Test DataFetcher</button>
+  <button id="testPipeline">Test Pipeline</button>
+  <button id="testCancelTask">Test Cancellation</button>
+
+  <pre id="output"></pre>
+
+  <script type="module">
+    import { DataFetcher } from './async/DataFetcher.js';
+    import { AsyncPipeline, mapSequential, mapParallel, reduceAsync } from './async/Pipeline.js';
+    import { TaskRunner } from './async/CancellableFetcher.js';
+
+    class SimpleHttpClient {
+      constructor(baseUrl = '') {
+        this.baseUrl = baseUrl;
+      }
+
+      async get(endpoint) {
+        const response = await fetch(this.baseUrl + endpoint);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        return response.json();
+      }
+    }
+
+    const output = document.getElementById('output');
+
+    const client = new SimpleHttpClient('https://jsonplaceholder.typicode.com');
+    const fetcher = new DataFetcher(client);
+
+    document.getElementById('loadDetails').addEventListener('click', async () => {
+      output.textContent = 'Loading user details...\n';
+
+      try {
+        const data = await fetcher.fetchUserWithDetails(1);
+        output.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        output.textContent = `Error: ${error.message}`;
+      }
+    });
+
+    document.getElementById('testPipeline').addEventListener('click', async () => {
+      output.textContent = 'Testing pipeline...\n';
+
+      try {
+        const pipeline = new AsyncPipeline();
+
+        pipeline
+          .use(async (data) => data.map((n) => n * 2))
+          .use(async (data) => data.filter((n) => n > 5))
+          .use(async (data) => data.reduce((sum, n) => sum + n, 0));
+
+        const result = await pipeline.execute([1, 2, 3, 4, 5]);
+
+        output.textContent += `Pipeline result: ${result}\n\n`;
+
+        const sequential = await mapSequential([1, 2, 3], async (n) => n * 10);
+        output.textContent += `Sequential: ${JSON.stringify(sequential)}\n`;
+
+        const parallel = await mapParallel([1, 2, 3], async (n) => n * 100, 2);
+        output.textContent += `Parallel: ${JSON.stringify(parallel)}\n`;
+
+        const reduced = await reduceAsync([1, 2, 3, 4], async (acc, n) => acc + n, 0);
+        output.textContent += `Reduced: ${reduced}`;
+      } catch (error) {
+        output.textContent += `Error: ${error.message}`;
+      }
+    });
+
+    document.getElementById('testCancelTask').addEventListener('click', async () => {
+      output.textContent = 'Testing cancellable task...\n';
+
+      const runner = new TaskRunner();
+
+      const { id } = runner.add(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        return 'Long task completed';
+      });
+
+      setTimeout(() => {
+        runner.cancel(id);
+        output.textContent += `Task ${id} cancelled\n`;
+      }, 1000);
+
+      try {
+        const result = await runner.run(id);
+        output.textContent += result;
+      } catch (error) {
+        output.textContent += `Error: ${error.message}`;
+      }
+    });
+  </script>
+</body>
+</html>
