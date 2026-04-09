@@ -1,0 +1,1 @@
+В lab_03 / task1 было выбрана utility функ для пооверки Email. Функция была описана используя шаблон паттерна из главы 3 "The Structure of a Design Pattern" 

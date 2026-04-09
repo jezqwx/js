@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modular Calculator</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #121212;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            color: #fff;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .calc-wrapper {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        #display {
+            background: #000;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: right;
+            min-height: 80px;
+        }
+
+        #expression {
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        #result {
+            font-size: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 16px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .num { background: #333; color: #fff; }
+        .op { background: #2196f3; color: #fff; }
+        .eq { background: #4caf50; color: #fff; grid-column: span 2; }
+        .clr { background: #555; color: #fff; grid-column: span 2; }
+
+        .advanced-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: 0.3s ease;
+        }
+
+        .advanced-panel.active {
+            max-height: 300px;
+            margin-top: 10px;
+        }
+
+        #history-section {
+            margin-top: 40px;
+            width: 100%;
+            max-width: 360px;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        #history-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        #history-list li {
+            margin-bottom: 8px;
+            background: #2a2a2a;
+            padding: 8px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1 id="title">Калькулятор</h1>
+
+<div class="calc-wrapper">
+
+    <div id="display">
+        <div id="expression"></div>
+        <div id="result">0</div>
+    </div>
+
+    <div class="grid">
+        <button class="clr" data-action="clear">AC</button>
+        <button class="op" data-action="delete">⌫</button>
+        <button class="op" data-operator="/">÷</button>
+
+        <button class="num" data-number="7">7</button>
+        <button class="num" data-number="8">8</button>
+        <button class="num" data-number="9">9</button>
+        <button class="op" data-operator="*">×</button>
+
+        <button class="num" data-number="4">4</button>
+        <button class="num" data-number="5">5</button>
+        <button class="num" data-number="6">6</button>
+        <button class="op" data-operator="-">−</button>
+
+        <button class="num" data-number="1">1</button>
+        <button class="num" data-number="2">2</button>
+        <button class="num" data-number="3">3</button>
+        <button class="op" data-operator="+">+</button>
+
+        <button class="num" data-number="0">0</button>
+        <button class="num" data-number=".">.</button>
+        <button class="eq" data-action="equals">=</button>
+    </div>
+
+    <div class="advanced-panel" id="advanced-panel">
+        <div class="grid" style="grid-template-columns: repeat(3,1fr); margin-top:10px;">
+            <button class="op" data-advanced="sqrt">√</button>
+            <button class="op" data-advanced="square">x²</button>
+            <button class="op" data-advanced="percent">%</button>
+            <button class="op" data-advanced="sin">sin</button>
+            <button class="op" data-advanced="cos">cos</button>
+            <button class="op" data-advanced="tan">tan</button>
+        </div>
+    </div>
+
+    <button class="op" id="toggle-advanced" style="width:100%;margin-top:10px;">
+        Дополнительные функции
+    </button>
+
+</div>
+
+<div id="history-section">
+    <h3>История операций</h3>
+    <ul id="history-list">
+        <li>История пока пуста</li>
+    </ul>
+</div>
+
+<script type="module" src="app.mjs"></script>
+
+</body>
+</html>

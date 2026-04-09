@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 11.1 Demo</title>
+</head>
+<body>
+  <h1>Lab 11.1 Demo</h1>
+
+  <button id="loadPost">Test HTTP Client</button>
+  <button id="testRetry">Test Retry</button>
+  <button id="testQueue">Test Async Queue</button>
+
+  <pre id="output"></pre>
+
+  <script type="module">
+    import PromiseHttpClient from './async/PromiseHttpClient.js';
+    import { withRetry } from './async/retry.js';
+    import { AsyncQueue } from './async/AsyncQueue.js';
+
+    const output = document.getElementById('output');
+
+    const client = new PromiseHttpClient('https://jsonplaceholder.typicode.com');
+
+    document.getElementById('loadPost').addEventListener('click', async () => {
+      output.textContent = 'Loading...\n';
+
+      try {
+        const data = await client.get('/posts/1');
+        output.textContent = 'HTTP Client Result:\n' + JSON.stringify(data, null, 2);
+      } catch (error) {
+        output.textContent = `Error: ${error.message}`;
+      }
+    });
+
+    document.getElementById('testRetry').addEventListener('click', async () => {
+      output.textContent = 'Testing retry...\n';
+
+      let count = 0;
+
+      try {
+        const result = await withRetry(async () => {
+          count++;
+
+          if (count < 3) {
+            const error = new Error('Temporary network failure');
+            error.name = 'NetworkError';
+            throw error;
+          }
+
+          return `Success on attempt ${count}`;
+        });
+
+        output.textContent += result;
+      } catch (error) {
+        output.textContent += `Error: ${error.message}`;
+      }
+    });
+
+    document.getElementById('testQueue').addEventListener('click', async () => {
+      output.textContent = 'Testing queue...\n';
+
+      const queue = new AsyncQueue(2);
+
+      function createTask(id, delay) {
+        return async () => {
+          output.textContent += `Task ${id} started\n`;
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          output.textContent += `Task ${id} finished\n`;
+          return `Result ${id}`;
+        };
+      }
+
+      const tasks = [
+        createTask(1, 2000),
+        createTask(2, 1000),
+        createTask(3, 1500),
+        createTask(4, 500),
+      ];
+
+      try {
+        const results = await queue.addAll(tasks);
+        output.textContent += '\nResults:\n' + JSON.stringify(results, null, 2);
+        output.textContent += '\n\nStats:\n' + JSON.stringify(queue.getStats(), null, 2);
+      } catch (error) {
+        output.textContent += `Error: ${error.message}`;
+      }
+    });
+  </script>
+</body>
+</html>
