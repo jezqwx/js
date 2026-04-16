@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lab 12.2 Test</title>
+  <link rel="icon" href="data:,">
+</head>
+<body>
+  <h1>Check Console - Lab 12.2</h1>
+
+  <script src="namespace/core.js"></script>
+  <script src="namespace/utils.js"></script>
+  <script src="namespace/plugins.js"></script>
+
+  <script>
+    console.log('MyApp core:', MyApp.core);
+
+    console.log('unique:', MyApp.utils.array.unique([1, 1, 2, 3, 3]));
+    console.log('chunk:', MyApp.utils.array.chunk([1, 2, 3, 4, 5, 6], 2));
+
+    console.log('capitalize:', MyApp.utils.string.capitalize('hello'));
+    console.log('slugify:', MyApp.utils.string.slugify('Hello World JavaScript'));
+
+    console.log('isToday:', MyApp.utils.date.isToday(new Date()));
+    console.log('daysDiff:', MyApp.utils.date.daysDiff('2026-04-01', '2026-04-10'));
+
+    console.log('random:', MyApp.utils.number.random(1, 10));
+    console.log('clamp:', MyApp.utils.number.clamp(15, 1, 10));
+
+    console.log('isEmail:', MyApp.plugins.validation.isEmail('test@mail.com'));
+    console.log('isPhone:', MyApp.plugins.validation.isPhone('+77001234567'));
+
+    MyApp.plugins.storage.local.set('user', { name: 'Bekzat', age: 20 });
+    console.log('localStorage get:', MyApp.plugins.storage.local.get('user'));
+
+    MyApp.plugins.register('plugins.custom', {
+      hello: function () {
+        return 'Hello from custom plugin';
+      }
+    });
+
+    console.log('custom plugin:', MyApp.plugins.custom.hello());
+  </script>
+</body>
+</html>
